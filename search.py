@@ -1,44 +1,34 @@
 import requests
 import re
-from itertools import permutations
 import time
 
+# Start initialization phase
 print("Initializing...")
-t1 = time.time()
+t_init = time.time()
 
-# Empty list of possible answers
-answers = []
+# get list of five-letter words
+print('Fetching word list...')
+all_words_response = requests.get("https://meaningpedia.com/5-letter-words?show=all")
 
-# The letters available
-valid_letters = [* "qweyuipfhjkzxm"]
+# compile regex pattern
+pattern = re.compile(r'<span itemprop="name">(\w+)</span>')
+# find all matches (get the words in a list)
+word_list = pattern.findall(all_words_response.text)
 
 # The current pattern in regex notation
-current_pattern = ".i..e"
+current_pattern = re.compile(r"[a-z]i[a-z][a-z]e")
 
-# All the available permutations of available characters
-char_perms = [* permutations(valid_letters, 5)]
+# Finish initialization phase
+print(f"Initialization complete in {time.time() - t_init} seconds.")
 
-# All permutations that match the current pattern
-filtered_char_perms = [* filter(lambda x: re.search(current_pattern, "".join(x)), char_perms)]
-possible_strings = ["".join(x) for x in filtered_char_perms]
+# Start search phase
+print("Searching...")
+t_search = time.time()
 
-print(f"Initialization complete in {time.time() - t1} seconds. \nNow searching for the possible answers...")
-
-t2 = time.time()
-# Get all the valid words among them
-for possibility in possible_strings:
-    # Check if this is a valid word
-    response = requests.post("https://words.dev-apis.com/validate-word",
-                             json = {"word": possibility},
-                             timeout = 0.8)
-    if response.json()['validWord'] == True:
-        # if it is a valid word, add it to the list of candidate answers
-        answers.append(possibility)
-t3 = time.time
-
-print("The possible answers are:\n")
+# Get all the valid words matching the current pattern
+answers = current_pattern.findall(" ".join(word_list))
+print("The possible answers are:")
 print(*answers, sep="\n")
-print(f"Search finished in {t3 - t2} seconds.")
 
-
-## Problems with this script: Takes way too long in search, and doesn't include instances with double letters
+# Finish search phase
+print(f"Search finished in {time.time() - t_search} seconds.")
