@@ -1,34 +1,37 @@
-import requests
 import re
 import time
+import pickle
 
-# Start initialization phase
-print("Initializing...")
-t_init = time.time()
+# Function to load the list from the pickled file
+def load_set_from_pickle(file_name):
+    try:
+        with open(file_name, 'rb') as file:
+            loaded_set = pickle.load(file)
+            return loaded_set
+    except FileNotFoundError:
+        print("File not found.")
+        return None
+    except pickle.PickleError:
+        print("Error loading pickled file.")
+        return None
 
-# get list of five-letter words
-print('Fetching word list...')
-all_words_response = requests.get("https://meaningpedia.com/5-letter-words?show=all")
-
-# compile regex pattern
-pattern = re.compile(r'<span itemprop="name">(\w+)</span>')
-# find all matches (get the words in a list)
-word_list = pattern.findall(all_words_response.text)
+# File name containing the pickled list
+file_name = "wordSet.pickle"
+# Loading the list from the pickled file
+word_set = load_set_from_pickle(file_name)
 
 # The current pattern in regex notation
-current_pattern = re.compile(r"[a-z]i[a-z][a-z]e")
-
-# Finish initialization phase
-print(f"Initialization complete in {time.time() - t_init} seconds.")
+current_attempt = input(">> Enter the part of the word you currently have, replacing empty positions with dots, like the pattern (th.nk) for example.\n>> ")
+current_pattern = re.compile(f"{current_attempt.lower().replace('.', '[a-z]')}")
 
 # Start search phase
-print("Searching...")
+print("\nSearching...")
 t_search = time.time()
 
 # Get all the valid words matching the current pattern
-answers = current_pattern.findall(" ".join(word_list))
+candidate_answers = {word for word in word_set if current_pattern.fullmatch(word)}
 print("The possible answers are:")
-print(*answers, sep="\n")
+print(*candidate_answers, sep="\n")
 
 # Finish search phase
-print(f"Search finished in {time.time() - t_search} seconds.")
+print(f"\nSearch finished in {time.time() - t_search} seconds.")
