@@ -34,4 +34,4 @@ print("The possible answers are:")
 print(*candidate_answers, sep="\n")
 
 # Finish search phase
-print(f"\nSearch finished in {time.time() - t_search} seconds.")
+print(f"\nSearch finished in {time.time() - t_search:.3f} seconds.")
