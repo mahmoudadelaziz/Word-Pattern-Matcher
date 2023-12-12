@@ -15,14 +15,14 @@ def load_set_from_pickle(file_name):
         print("Error loading pickled file.")
         return None
 
-# File name containing the pickled list
-file_name = "wordSet.pickle"
-# Loading the list from the pickled file
-word_set = load_set_from_pickle(file_name)
-
 # The current pattern in regex notation
 current_attempt = input(">> Enter the part of the word you currently have, replacing empty positions with dots, like the pattern (th.nk) for example.\n>> ")
 current_pattern = re.compile(f"{current_attempt.lower().replace('.', '[a-z]')}")
+
+# File name containing the pickled list
+file_name = f"{len(current_attempt)}-letter-wordSet.pickle"
+# Loading the list from the pickled file
+word_set = load_set_from_pickle(file_name)
 
 # Start search phase
 print("\nSearching...")
